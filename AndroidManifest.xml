@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wxq.covers"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 允许应用程序改变网络状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <!-- 允许应用程序改变WIFI连接状态 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 允许应用程序访问有关的网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 允许应用程序访问WIFI网卡的网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 允许应用程序完全使用网络 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="ai1xH1fgDwLOR2ty7hQFK6Ur" />
+
+        <activity android:name="com.cover.ui.WelcomeActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.cover.main.MainActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity android:name="com.cover.ui.CoverList" >
+        </activity>
+        <activity android:name="com.cover.ui.CoverMapList" />
+        <activity android:name="com.cover.ui.Detail" />
+        <activity android:name="com.cover.ui.ParamSettingActivity" />
+        <activity android:name="com.cover.ui.SoftwareSettings" />
+        <activity android:name="com.cover.ui.SingleMapDetail" />
+
+        <receiver android:name="com.cover.ui.CoverList$CoverListReceiver" >
+            <intent-filter>
+                <action android:name="com.cover.coverlist" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.cover.ui.Detail$DetailReceiver" >
+            <intent-filter>
+                <action android:name="com.cover.detail" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.cover.ui.ParamSettingActivity$SettingsReceiver" >
+            <intent-filter>
+                <action android:name="com.cover.settings" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.cover.ui.SoftwareSettings$SoftwareSettingsReceiver" >
+            <intent-filter>
+                <action android:name="com.cover.softwaresettings" />
+            </intent-filter>
+        </receiver>
+<!--         <receiver android:name="com.cover.main.MainActivity$MainActivityReceiver" > -->
+<!--             <intent-filter> -->
+<!--                 <action android:name="com.cover.main.mainactivity" /> -->
+<!--             </intent-filter> -->
+<!--         </receiver> -->
+        <receiver android:name="com.cover.service.InternetService$ServiceReceiver" >
+            <intent-filter>
+                <action android:name="com.cover.service.IntenetService" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.cover.service.InternetService" />
+    </application>
+
+</manifest>
