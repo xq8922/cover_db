@@ -73,11 +73,11 @@ public class Entity implements Serializable {
 	/**
 	 * 标志各种状态
 	 * 
-	 * @EXCEPTION_1 报警状态
-	 * @EXCEPTION_2 欠压状态
-	 * @EXCEPTION_3 报警欠压
-	 * @SETTING_FINISH 撤防中状态
-	 * @SETTING_PARAM 参数设置中状态
+	 * @param EXCEPTION_1 报警状态
+	 * @param EXCEPTION_2 欠压状态
+	 * @param EXCEPTION_3 报警欠压
+	 * @param SETTING_FINISH 撤防中状态
+	 * @param SETTING_PARAM 参数设置中状态
 	 */
 	public enum Status {
 		NORMAL, REPAIR, EXCEPTION_1, EXCEPTION_2, EXCEPTION_3, SETTING_FINISH, SETTING_PARAM

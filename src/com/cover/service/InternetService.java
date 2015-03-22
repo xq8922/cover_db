@@ -219,9 +219,9 @@ public class InternetService extends Service implements Runnable {
 			SocketAddress socAddress = new InetSocketAddress(ip, port);
 			socket.connect(socAddress, 3000);
 			Log.i(TAG, "socket is connectted");
-			
+
 		} catch (SocketException e) {
-			if(flagConnectionOutOnce )
+			if (flagConnectionOutOnce)
 				handler.sendEmptyMessage(0x07);
 			flagConnectionOutOnce = false;
 			Log.v(TAG, "time out");
@@ -401,29 +401,38 @@ public class InternetService extends Service implements Runnable {
 						}
 						entity.setLongtitude(CoverUtils.byte2Double(longTi));
 						entity.setLatitude(CoverUtils.byte2Double(laTi));
+						int tempStatus = -1;
 						switch (msgBuff[i++ + 1]) {
 						case 0x01:
 							entity.setStatus(Status.NORMAL);
+							tempStatus = 0;
 							break;
 						case 0x02:
 							entity.setStatus(Status.EXCEPTION_1);
+							tempStatus = 1;
 							break;
 						case 0x03:
+							tempStatus = 2;
 							entity.setStatus(Status.REPAIR);
 							break;
 						case 0x04:
+							tempStatus = 3;
 							entity.setStatus(Status.EXCEPTION_2);
 							break;
 						case 0x05:
+							tempStatus = 4;
 							entity.setStatus(Status.EXCEPTION_3);
 							break;
 						case 0x06:// 处理接收到撤防或者0x07的设置中时，删除数据路相应条目
+							tempStatus = 5;
 							entity.setStatus(Status.SETTING_FINISH);
 							break;
 						case 0x07:
+							tempStatus = 6;
 							entity.setStatus(Status.SETTING_PARAM);
 							break;
 						}
+
 						// 处理若有从撤防中状态改变成正常状态
 						if (douyadb.isExist("leave",
 								entity.getTag().equals("level") ? "水位" : "井盖"
@@ -444,7 +453,15 @@ public class InternetService extends Service implements Runnable {
 								douyadb.delete("setting", entity.getTag() + "_"
 										+ entity.getId());
 						}
-						setNotify(entity,"报警信息");
+						// 修改数据库
+						if (douyadb.isExistInEntity(entity.getTag(), ""
+								+ entity.getId())) {
+							douyadb.updateColumn("entity", entity.getTag(),
+									entity.getId() + "",
+									entity.getLongtitude(),
+									entity.getLatitude(), tempStatus, true);
+						}
+						setNotify(entity, "报警信息");
 						byte[] ackAlert = new byte[] { (byte) 0xFA,
 								(byte) 0xF5, (byte) 0x00, (byte) 0x07,
 								(byte) 0x0A };
@@ -474,7 +491,15 @@ public class InternetService extends Service implements Runnable {
 						}
 						entity.setLatitude(CoverUtils.byte2Double(lati));
 						entity.setLongtitude(CoverUtils.byte2Double(lonti));
-						setNotify(entity,"终端信息改变");
+						// 修改数据库
+						if (douyadb.isExistInEntity(entity.getTag(), ""
+								+ entity.getId())) {
+							douyadb.updateLonLa("entity", entity.getTag(),
+									entity.getId() + "",
+									entity.getLongtitude(),
+									entity.getLatitude());
+						}
+						setNotify(entity, "终端信息改变");
 						break;
 					}
 					case 0x03: {
@@ -484,6 +509,69 @@ public class InternetService extends Service implements Runnable {
 					}
 					case 0x04: {
 						getMessage(msgBuff, ACTION_CoverList);
+						{
+							final int dataLength = 20;
+							int tempStatus = -1;
+							int numOfEntity = (msgBuff.length - 1) / dataLength;
+							byte[] idByte = new byte[2];
+							int i = 0;
+							for (int j1 = 0; j1 < numOfEntity; j1++) {
+								Entity entity = new Entity();
+								idByte[1] = msgBuff[i++ + 1];
+								idByte[0] = msgBuff[i++ + 1];
+								entity.setId(CoverUtils.getShort(idByte));
+								entity.setTag(msgBuff[i++ + 1] == (byte) 0x10 ? "cover"
+										: "level");
+								byte[] longTi = new byte[8];
+								for (int k = 0, t = i; i < t + 8; i++) {
+									longTi[k++] = msgBuff[i + 1];
+								}
+								byte[] laTi = new byte[8];
+								for (int k = 0, t = i; i < t + 8; i++) {
+									laTi[k++] = msgBuff[i + 1];
+								}
+								entity.setLongtitude(CoverUtils
+										.byte2Double(longTi));
+								entity.setLatitude(CoverUtils.byte2Double(laTi));
+								switch (msgBuff[i++ + 1]) {
+								case 0x01:
+									tempStatus = 0;
+									entity.setStatus(Status.NORMAL);
+									break;
+								case 0x02:
+									tempStatus = 1;
+									entity.setStatus(Status.EXCEPTION_1);
+									break;
+								case 0x03:
+									tempStatus = 2;
+									entity.setStatus(Status.REPAIR);
+									break;
+								case 0x04:
+									tempStatus = 3;
+									entity.setStatus(Status.EXCEPTION_2);
+									break;
+								case 0x05:
+									tempStatus = 4;
+									entity.setStatus(Status.EXCEPTION_3);
+									break;
+								case 0x06:
+									tempStatus = 5;
+									entity.setStatus(Status.SETTING_FINISH);
+									break;
+								case 0x07:
+									tempStatus = 6;
+									entity.setStatus(Status.SETTING_PARAM);
+									break;
+								}
+								if (!douyadb.isExistInEntity(entity.getTag(),
+										entity.getId() + "")) {
+									douyadb.addEntity(entity.getId() + "",
+											entity.getStatus(), entity.getTag(),
+											entity.getLongtitude(),
+											entity.getLatitude());
+								}
+							}
+						}
 						break;
 					}
 					case 0x05: {
@@ -542,7 +630,7 @@ public class InternetService extends Service implements Runnable {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void setNotify(Entity entity,String title) {
+	public void setNotify(Entity entity, String title) {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		// 定义Notification的各种属性
@@ -574,10 +662,9 @@ public class InternetService extends Service implements Runnable {
 		askMsg.function = (byte) 0x0D;
 		askMsg.data = null;
 		askMsg.length = CoverUtils.short2ByteArray((short) 7);
-		byte[] checkAsk = CoverUtils
-				.msg2ByteArrayExcepteCheck(askMsg);
-		byte[] tmp_str = CRC16M.getSendBuf(CoverUtils
-				.bytes2HexString(checkAsk));
+		byte[] checkAsk = CoverUtils.msg2ByteArrayExcepteCheck(askMsg);
+		byte[] tmp_str = CRC16M
+				.getSendBuf(CoverUtils.bytes2HexString(checkAsk));
 		askMsg.check[0] = tmp_str[tmp_str.length - 1];
 		askMsg.check[1] = tmp_str[tmp_str.length - 2];
 		int lengthAsk = askMsg.getLength();

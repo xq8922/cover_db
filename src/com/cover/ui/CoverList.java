@@ -92,7 +92,7 @@ public class CoverList extends Activity implements OnClickListener {
 		setContentView(R.layout.cover_list);
 
 		douyadb = new Douyatech(getApplicationContext());
-		// getDatas();
+		getDatas();
 		lv_coverlist = (ListView) findViewById(R.id.lv_coverlist_cover);
 		cbWater = (CheckBox) findViewById(R.id.cb_water);
 		cbCover = (CheckBox) findViewById(R.id.cb_cover);
@@ -125,42 +125,42 @@ public class CoverList extends Activity implements OnClickListener {
 		rgBottom.check(R.id.rb_list);
 		AppManager.getAppManager().addActivity(this);
 	}
-	
-	/** 
-	 * 菜单、返回键响应 
-	 */  
-	@Override  
-	public boolean onKeyDown(int keyCode, KeyEvent event) {  
-	    // TODO Auto-generated method stub  
-	    if(keyCode == KeyEvent.KEYCODE_BACK)  
-	       {    
-	           exitBy2Click();      //调用双击退出函数  
-	       }  
-	    return false;  
-	}  
-	/** 
-	 * 双击退出函数 
-	 */  
-	private static Boolean isExit = false;  
-	  
-	private void exitBy2Click() {  
-	    Timer tExit = null;  
-	    if (isExit == false) {  
-	        isExit = true; // 准备退出  
-	        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();  
-	        tExit = new Timer();  
-	        tExit.schedule(new TimerTask() {  
-	            @Override  
-	            public void run() {  
-	                isExit = false; // 取消退出  
-	            }  
-	        }, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务  
-	  
-	    } else {  
-	        //exit
-	    	AppManager.getAppManager().finishAllActivity();
-	    }  
-	}  
+
+	/**
+	 * 菜单、返回键响应
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			exitBy2Click(); // 调用双击退出函数
+		}
+		return false;
+	}
+
+	/**
+	 * 双击退出函数
+	 */
+	private static Boolean isExit = false;
+
+	private void exitBy2Click() {
+		Timer tExit = null;
+		if (isExit == false) {
+			isExit = true; // 准备退出
+			Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+			tExit = new Timer();
+			tExit.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					isExit = false; // 取消退出
+				}
+			}, 2000); // 如果2秒钟内没有按下返回键，则启动定时器取消掉刚才执行的任务
+
+		} else {
+			// exit
+			AppManager.getAppManager().finishAllActivity();
+		}
+	}
 
 	private android.widget.CompoundButton.OnCheckedChangeListener cbChangeListener = new android.widget.CompoundButton.OnCheckedChangeListener() {
 
@@ -399,26 +399,27 @@ public class CoverList extends Activity implements OnClickListener {
 		items.clear();
 		waterItems.clear();
 		coverItems.clear();
-		for (int i = 0; i < (100 - 1) / 5; i++) {
-			if (i <= 5) {
-				Entity entity = new Entity((short) 1, Status.REPAIR, "水位",
-						34.26667, 108.95000);
-				waterItems.add(entity);
-				items.add(entity);
-			} else if (i <= 10) {
-				Entity entity = new Entity((short) 2, Status.NORMAL, "井盖",
-						34.26667 + 0.1 * new Random().nextFloat(),
-						108.95000 + 0.1 * new Random().nextFloat());
-				coverItems.add(entity);
-				items.add(entity);
-			} else {
-				Entity entity = new Entity((short) 2, Status.EXCEPTION_1, "井盖",
-						34.26667 + 0.1 * new Random().nextFloat(),
-						108.95000 + 0.1 * new Random().nextFloat());
-				coverItems.add(entity);
-				items.add(entity);
-			}
-		}
+		// for (int i = 0; i < (100 - 1) / 5; i++) {
+		// if (i <= 5) {
+		// Entity entity = new Entity((short) 1, Status.REPAIR, "水位",
+		// 34.26667, 108.95000);
+		// waterItems.add(entity);
+		// items.add(entity);
+		// } else if (i <= 10) {
+		// Entity entity = new Entity((short) 2, Status.NORMAL, "井盖",
+		// 34.26667 + 0.1 * new Random().nextFloat(),
+		// 108.95000 + 0.1 * new Random().nextFloat());
+		// coverItems.add(entity);
+		// items.add(entity);
+		// } else {
+		// Entity entity = new Entity((short) 2, Status.EXCEPTION_1, "井盖",
+		// 34.26667 + 0.1 * new Random().nextFloat(),
+		// 108.95000 + 0.1 * new Random().nextFloat());
+		// coverItems.add(entity);
+		// items.add(entity);
+		// }
+		// }
+		// 将items赋值，
 	}
 
 	@Override
